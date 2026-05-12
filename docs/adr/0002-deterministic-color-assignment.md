@@ -48,16 +48,16 @@ phones recompute their hue in lockstep.
 
 8 colors, 45° apart on the HSL hue wheel at 95% saturation, 55% lightness:
 
-| idx | hue   | rough name |
-| --- | ----- | ---------- |
-| 0   | 0°    | red        |
-| 1   | 45°   | orange     |
-| 2   | 90°   | lime       |
-| 3   | 135°  | jade       |
-| 4   | 180°  | cyan       |
-| 5   | 225°  | blue       |
-| 6   | 270°  | magenta    |
-| 7   | 315°  | pink       |
+| idx | hue  | rough name |
+| --- | ---- | ---------- |
+| 0   | 0°   | red        |
+| 1   | 45°  | orange     |
+| 2   | 90°  | lime       |
+| 3   | 135° | jade       |
+| 4   | 180° | cyan       |
+| 5   | 225° | blue       |
+| 6   | 270° | magenta    |
+| 7   | 315° | pink       |
 
 Evenly spaced so neighboring assignments visually differ even when collisions
 push two phones to adjacent slots.
