@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Shadow, type Role } from "./features/shadow/Shadow";
 import { SettingsDrawer } from "./features/settings/SettingsDrawer";
 import { appConfig } from "./shared/config";
+import { InviteShareButton } from "@baditaflorin/mesh-common";
 
 const STORAGE = {
   room: `${appConfig.storagePrefix}:room`,
@@ -42,6 +43,7 @@ export function App() {
     <div className="app-root">
       <Shadow roomId={roomId} role={role} peerId={peerId} />
 
+      <InviteShareButton appName={appConfig.appName} roomId={roomId} />
       <button
         type="button"
         className="settings-fab"
