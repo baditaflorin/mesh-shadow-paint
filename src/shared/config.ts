@@ -1,6 +1,9 @@
 export const appConfig = {
   appName: "mesh-shadow-paint",
   storagePrefix: "mesh-shadow-paint",
+  description:
+    "Peer-to-peer mesh: phones become colored fill lights. One phone is the camera; others show solid hues from different angles.",
+  accentHex: "#ff7eb6",
   version: __APP_VERSION__,
   commit: __GIT_COMMIT__,
   repositoryUrl: "https://github.com/baditaflorin/mesh-shadow-paint",
