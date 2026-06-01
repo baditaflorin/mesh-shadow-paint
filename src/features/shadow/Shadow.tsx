@@ -97,7 +97,9 @@ export function Shadow({ roomId, role, peerId }: Props) {
       <div className="shadow-stage shadow-camera">
         <div className="shadow-hud">
           <span>
-            {lampCount} lamp{lampCount === 1 ? "" : "s"} ready
+            {lampCount === 0
+              ? "Waiting for lamps — open this room on another phone"
+              : `${lampCount} lamp${lampCount === 1 ? "" : "s"} ready`}
           </span>
         </div>
         <button type="button" className="shadow-reshuffle" onClick={reshuffle}>

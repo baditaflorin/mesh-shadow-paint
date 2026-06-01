@@ -81,6 +81,42 @@ test("peer A's Reshuffle changes peer B's shared lamp hue across the mesh", asyn
   }
 });
 
+/**
+ * Cross-peer PRESENCE assertion for the camera role. The README promises one
+ * phone is the camera and "sees" the lamps. That count is driven by the shared
+ * `phones` Y.Map (each phone republishes `{role, ts}` every 1.5s); the camera
+ * tallies fresh lamps. We open A as camera, B as lamp, and assert A's HUD count
+ * rises from 0 to 1 — proving B's presence crossed the mesh into A's replica.
+ *
+ * This complements the hue test: the hue path exercises the `state` map
+ * (rotationCounter), this exercises the `phones` map (per-peer presence). A
+ * regression in either Y key name is caught by one of the two tests.
+ */
+test("a camera peer sees a lamp peer appear in its HUD count across the mesh", async ({
+  browser,
+  baseURL,
+}) => {
+  const { a, b, cleanup } = await openTwoPeers(browser, baseURL ?? "", { storagePrefix });
+  try {
+    // Role is captured once at App mount from localStorage. localStorage is
+    // shared across both pages in one context, so set + reload each peer in
+    // turn: A captures "camera" in React state before B flips the key to "lamp".
+    await a.evaluate((prefix) => localStorage.setItem(`${prefix}:role`, "camera"), storagePrefix);
+    await a.reload();
+    await a.getByRole("button", { name: /connect as camera/i }).click();
+
+    await b.evaluate((prefix) => localStorage.setItem(`${prefix}:role`, "lamp"), storagePrefix);
+    await b.reload();
+    await b.getByRole("button", { name: /connect as lamp/i }).click();
+
+    // The camera HUD starts with no lamps, then must register B's presence.
+    await expect(a.locator(".shadow-camera .shadow-hud")).toContainText(/waiting for lamps/i);
+    await expect(a.locator(".shadow-camera .shadow-hud")).toContainText(/1 lamp ready/i);
+  } finally {
+    await cleanup();
+  }
+});
+
 // Convert the app's `hsl(h, 95%, 55%)` to the `rgb(r, g, b)` form the browser
 // reports for `background-color`, so the CSS assertion is exact.
 function hslToRgb(h: number, s: number, l: number): string {
