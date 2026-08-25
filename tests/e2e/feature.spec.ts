@@ -109,8 +109,9 @@ test("a camera peer sees a lamp peer appear in its HUD count across the mesh", a
     await b.reload();
     await b.getByRole("button", { name: /connect as lamp/i }).click();
 
-    // The camera HUD starts with no lamps, then must register B's presence.
-    await expect(a.locator(".shadow-camera .shadow-hud")).toContainText(/waiting for lamps/i);
+    // Connection timing is intentionally unconstrained: by the time this
+    // assertion starts, B can already have published its presence. Assert the
+    // durable cross-peer result rather than a transient "waiting" state.
     await expect(a.locator(".shadow-camera .shadow-hud")).toContainText(/1 lamp ready/i);
   } finally {
     await cleanup();
