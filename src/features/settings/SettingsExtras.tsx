@@ -10,30 +10,35 @@ export function SettingsExtras({ role, onRoleChange, peerId }: Props) {
   return (
     <>
       <label>
-        <span>Role</span>
+        <span>Device role</span>
         <div className="settings-toggle">
           <button
             type="button"
             className={role === "camera" ? "on" : ""}
             onClick={() => onRoleChange("camera")}
+            aria-pressed={role === "camera"}
           >
-            Camera (black screen)
+            Camera station
           </button>
           <button
             type="button"
             className={role === "lamp" ? "on" : ""}
             onClick={() => onRoleChange("lamp")}
+            aria-pressed={role === "lamp"}
           >
-            Lamp (colored)
+            Light panel
           </button>
         </div>
       </label>
 
       <p className="mesh-settings-help">
-        Reshuffle the palette from the main screen once you&rsquo;ve connected.
+        A camera station keeps its panel dark. A light panel takes one synchronized hue.
       </p>
       <p className="mesh-settings-help">
-        Your peer id: <code>{peerId.slice(0, 8)}</code> (deterministic palette index seed).
+        Rotate the shared palette from the studio once your devices are armed.
+      </p>
+      <p className="mesh-settings-help">
+        This device: <code>{peerId.slice(0, 8)}</code>
       </p>
     </>
   );

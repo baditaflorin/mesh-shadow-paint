@@ -1,9 +1,5 @@
 :root {
   color-scheme: dark;
-  --bg: #050505;
-  --fg: #f0f0f0;
-  --muted: #888;
-  --accent: hsl(180, 75%, 60%);
 }
 
 * {
@@ -12,219 +8,817 @@
 
 html,
 body,
-#root,
-.app-root {
-  margin: 0;
-  padding: 0;
-  height: 100%;
+#root {
   width: 100%;
-  background: var(--bg);
-  color: var(--fg);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-  -webkit-tap-highlight-color: transparent;
+  height: 100%;
+  margin: 0;
+  background: var(--mesh-canvas, #15111b);
+  color: var(--mesh-text, #faf4e9);
+  font-family: var(--mesh-font-sans, ui-sans-serif, system-ui, sans-serif);
+}
+
+body {
   overflow: hidden;
-  overscroll-behavior: none;
 }
 
-.app-root {
+button,
+input {
+  font: inherit;
+}
+
+.shadow-paint-page {
   position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
+  isolation: isolate;
 }
 
-.shadow-arm {
+.shadow-paint-page::before,
+.shadow-paint-page::after {
   position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  text-align: center;
-  background: linear-gradient(135deg, #181a1c 0%, #050505 80%);
-}
-
-.shadow-arm h1 {
-  font-size: 1.7rem;
-  margin: 0 0 1rem;
-  color: var(--accent);
-  letter-spacing: 0.03em;
-}
-
-.shadow-arm p {
-  max-width: 28rem;
-  color: var(--fg);
-  opacity: 0.85;
-  line-height: 1.5;
-  margin: 0 0 1.5rem;
-}
-
-.shadow-arm-button {
-  font-size: 1.1rem;
-  padding: 1rem 2rem;
-  background: var(--accent);
-  color: #0a0a0a;
-  border: none;
+  z-index: -1;
   border-radius: 999px;
-  font-weight: 600;
-  cursor: pointer;
-  letter-spacing: 0.02em;
-}
-
-.shadow-hint {
-  margin-top: 1.5rem;
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
-.shadow-stage {
-  position: absolute;
-  inset: 0;
-  transition: background 220ms ease-out;
-}
-
-.shadow-camera {
-  background: #000;
-}
-
-.shadow-lamp {
-  /* color set inline */
-}
-
-.shadow-hud {
-  position: absolute;
-  top: max(env(safe-area-inset-top), 0.75rem);
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 0.5rem;
-  font-size: 0.75rem;
-  letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.6);
-  background: rgba(0, 0, 0, 0.4);
-  padding: 0.4em 0.8em;
-  border-radius: 999px;
-  backdrop-filter: blur(8px);
+  content: "";
+  filter: blur(2px);
   pointer-events: none;
 }
 
-.shadow-hud-lamp {
-  color: rgba(0, 0, 0, 0.7);
-  background: rgba(255, 255, 255, 0.5);
-  font-weight: 600;
+.shadow-paint-page::before {
+  top: -14rem;
+  left: -13rem;
+  width: 38rem;
+  height: 38rem;
+  background: radial-gradient(circle, rgb(216 186 117 / 16%), transparent 66%);
 }
 
-.shadow-reshuffle {
-  position: absolute;
-  bottom: max(env(safe-area-inset-bottom), 3rem);
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 0.8em 1.4em;
-  background: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 999px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-  z-index: 3;
+.shadow-paint-page::after {
+  right: -18rem;
+  bottom: -22rem;
+  width: 44rem;
+  height: 44rem;
+  background: radial-gradient(circle, rgb(89 180 171 / 11%), transparent 68%);
 }
 
-.shadow-lamp .shadow-reshuffle {
-  background: rgba(255, 255, 255, 0.7);
-  color: #000;
-  border-color: rgba(0, 0, 0, 0.25);
+.shadow-eyebrow {
+  margin: 0 0 0.5rem;
+  color: var(--mesh-accent, #d8ba75);
+  font-size: 0.68rem;
+  font-weight: 780;
+  letter-spacing: 0.15em;
+  line-height: 1.2;
+  text-transform: uppercase;
 }
 
-.shadow-camera-hint {
-  position: absolute;
-  bottom: 8rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 18rem;
-  text-align: center;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.4);
+.shadow-paint-landing {
+  display: grid;
+  align-items: center;
+  padding: clamp(0.9rem, 3.4vw, 3.2rem);
+}
+
+.shadow-entry-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(20rem, 0.95fr);
+  grid-template-areas:
+    "intro controls"
+    "guide controls";
+  width: min(100%, 75rem);
+  gap: clamp(1rem, 3vw, 2.5rem);
+  margin: 0 auto;
+}
+
+.shadow-entry-intro {
+  grid-area: intro;
+  align-self: end;
+  max-width: 38rem;
+}
+
+.shadow-entry-intro h1,
+.shadow-entry-control h2,
+.shadow-light-guide h2,
+.shadow-stage-card h1,
+.shadow-stage-card h2 {
   margin: 0;
+  color: var(--mesh-text, #faf4e9);
+  letter-spacing: -0.055em;
+}
+
+.shadow-entry-intro h1 {
+  max-width: 9.5ch;
+  font-size: clamp(3rem, 7vw, 6.8rem);
+  line-height: 0.88;
+}
+
+.shadow-entry-lede {
+  max-width: 34rem;
+  margin: 1rem 0 0;
+  color: var(--mesh-text-muted, #c8bacd);
+  font-size: clamp(0.98rem, 1.8vw, 1.16rem);
+  line-height: 1.52;
+}
+
+.shadow-entry-signals {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 1.25rem;
+  color: var(--mesh-text-muted, #c8bacd);
+  font-size: 0.8rem;
+}
+
+.shadow-entry-control {
+  grid-area: controls;
+  align-self: center;
+  min-width: 0;
+  border-color: color-mix(in srgb, var(--mesh-border, #4b3b57) 88%, transparent);
+  background:
+    linear-gradient(145deg, rgb(216 186 117 / 11%), transparent 40%),
+    var(--mesh-surface-raised, #2b2036);
+  box-shadow: var(--mesh-shadow, 0 20px 50px rgb(0 0 0 / 42%));
+}
+
+.shadow-entry-control-heading,
+.shadow-stage-topline,
+.shadow-stage-footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.shadow-entry-control h2,
+.shadow-light-guide h2,
+.shadow-stage-card h2 {
+  font-size: clamp(1.45rem, 2.6vw, 2.25rem);
+  line-height: 0.98;
+}
+
+.shadow-entry-control .mesh-status-pill {
+  flex: 0 1 auto;
+  max-width: 11.5rem;
+  white-space: normal;
+}
+
+.shadow-role-options {
+  display: grid;
+  gap: 0.6rem;
+  margin: 1.2rem 0 0.9rem;
+}
+
+.shadow-role-option {
+  display: grid;
+  gap: 0.24rem;
+  width: 100%;
+  min-height: 5.2rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--mesh-border, #4b3b57) 82%, transparent);
+  border-radius: 1rem;
+  background: rgb(8 6 11 / 26%);
+  color: var(--mesh-text, #faf4e9);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.shadow-role-option:hover {
+  border-color: color-mix(in srgb, var(--mesh-accent, #d8ba75) 78%, white);
+  transform: translateY(-1px);
+}
+
+.shadow-role-option.is-active {
+  border-color: var(--mesh-accent, #d8ba75);
+  background: linear-gradient(105deg, rgb(216 186 117 / 19%), rgb(216 186 117 / 5%));
+  box-shadow: inset 0 0 0 1px rgb(216 186 117 / 18%);
+}
+
+.shadow-role-option-label {
+  font-size: 0.95rem;
+  font-weight: 760;
+  letter-spacing: -0.015em;
+}
+
+.shadow-role-option-detail,
+.shadow-entry-helper,
+.shadow-light-guide p,
+.shadow-camera-core p,
+.shadow-light-direction p {
+  color: var(--mesh-text-muted, #c8bacd);
+  font-size: 0.84rem;
+  line-height: 1.43;
+}
+
+.shadow-role-option-detail {
+  max-width: 31rem;
+}
+
+.shadow-arm-action {
+  margin-top: 0;
+}
+
+.shadow-entry-helper {
+  margin: 0.72rem 0 0;
+}
+
+.shadow-light-guide {
+  display: grid;
+  grid-area: guide;
+  grid-template-columns: minmax(10rem, 0.78fr) minmax(0, 1.22fr);
+  align-items: center;
+  gap: 1rem;
+  max-width: 38rem;
+}
+
+.shadow-light-guide p {
+  margin: 0.8rem 0 0;
+}
+
+.shadow-guide-frame {
+  position: relative;
+  min-height: 12.5rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--mesh-border, #4b3b57) 75%, transparent);
+  border-radius: 1.25rem;
+  background: linear-gradient(135deg, rgb(216 186 117 / 10%), transparent 45%), rgb(8 7 12 / 36%);
+}
+
+.shadow-guide-frame::before,
+.shadow-guide-frame::after {
+  position: absolute;
+  top: 50%;
+  width: 48%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(216 186 117 / 68%));
+  content: "";
+  transform-origin: right center;
+}
+
+.shadow-guide-frame::before {
+  left: 0;
+  transform: rotate(-22deg);
+}
+
+.shadow-guide-frame::after {
+  right: 0;
+  background: linear-gradient(90deg, rgb(89 180 171 / 68%), transparent);
+  transform: rotate(24deg);
+  transform-origin: left center;
+}
+
+.shadow-guide-light,
+.shadow-guide-subject,
+.shadow-guide-camera {
+  position: absolute;
+  display: block;
+}
+
+.shadow-guide-light {
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0.45rem rgb(216 186 117 / 12%);
+}
+
+.shadow-guide-light-a {
+  top: 22%;
+  left: 13%;
+  background: #d8ba75;
+}
+
+.shadow-guide-light-b {
+  right: 12%;
+  bottom: 24%;
+  background: #59b4ab;
+  box-shadow: 0 0 0 0.45rem rgb(89 180 171 / 12%);
+}
+
+.shadow-guide-subject {
+  top: 50%;
+  left: 50%;
+  width: 2.8rem;
+  height: 4.1rem;
+  border: 1px solid rgb(250 244 233 / 48%);
+  border-radius: 1.6rem 1.6rem 0.75rem 0.75rem;
+  transform: translate(-50%, -50%);
+}
+
+.shadow-guide-camera {
+  bottom: 0.9rem;
+  left: 50%;
+  width: 2.8rem;
+  height: 1.6rem;
+  border: 1px solid rgb(250 244 233 / 46%);
+  border-radius: 0.45rem;
+  transform: translateX(-50%);
+}
+
+.shadow-guide-camera::before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.58rem;
+  height: 0.58rem;
+  border: 1px solid rgb(250 244 233 / 56%);
+  border-radius: 50%;
+  content: "";
+  transform: translate(-50%, -50%);
+}
+
+.shadow-paint-live {
+  padding: clamp(0.75rem, 2vw, 1.6rem);
+}
+
+.shadow-stage-card {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 68rem);
+  height: 100%;
+  min-height: 0;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.shadow-stage-card h1 {
+  font-size: clamp(1.8rem, 3.5vw, 3.3rem);
+  line-height: 0.95;
+}
+
+.shadow-stage-topline {
+  flex: 0 0 auto;
+}
+
+.shadow-stage-topline .mesh-status-pill {
+  flex: 0 1 auto;
+  max-width: min(14rem, 48%);
+  white-space: normal;
+}
+
+.shadow-stage-footer {
+  flex: 0 0 auto;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in srgb, var(--mesh-border, #4b3b57) 80%, transparent);
+}
+
+.shadow-stage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.shadow-stage-actions .mesh-button {
+  min-height: 2.6rem;
+  font-size: 0.84rem;
+}
+
+.shadow-camera-stage {
+  border-color: rgb(255 255 255 / 9%);
+  background:
+    radial-gradient(circle at 50% 42%, rgb(216 186 117 / 8%), transparent 24%),
+    linear-gradient(145deg, #060606, #000 64%);
+}
+
+.shadow-camera-stage .mesh-status-pill,
+.shadow-camera-stage .mesh-presence {
+  border-color: rgb(255 255 255 / 14%);
+  background: rgb(255 255 255 / 5%);
+}
+
+.shadow-camera-stage .shadow-eyebrow {
+  color: color-mix(in srgb, var(--mesh-accent, #d8ba75) 78%, white);
+}
+
+.shadow-camera-stage .shadow-stage-footer {
+  border-top-color: rgb(255 255 255 / 10%);
+}
+
+.shadow-camera-stage .mesh-button-secondary {
+  border-color: rgb(255 255 255 / 17%);
+  background: rgb(255 255 255 / 8%);
+}
+
+.shadow-camera-core {
+  display: grid;
+  grid-template-columns: minmax(11rem, 0.72fr) minmax(0, 1.28fr);
+  align-items: center;
+  gap: clamp(1rem, 4vw, 4rem);
+  flex: 1;
+  min-height: 0;
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: clamp(1rem, 4vw, 3.5rem) 0;
+}
+
+.shadow-camera-aperture {
+  position: relative;
+  aspect-ratio: 1;
+  width: min(100%, 17rem);
+  justify-self: center;
+  border: 1px solid rgb(255 255 255 / 15%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(255 255 255 / 2%), transparent 62%);
+  box-shadow:
+    0 0 0 1.5rem rgb(255 255 255 / 2%),
+    0 0 0 4rem rgb(216 186 117 / 2%);
+}
+
+.shadow-camera-aperture::before,
+.shadow-camera-aperture::after,
+.shadow-camera-aperture span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 72%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(216 186 117 / 65%), transparent);
+  content: "";
+  transform-origin: center;
+}
+
+.shadow-camera-aperture::before {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.shadow-camera-aperture::after {
+  transform: translate(-50%, -50%) rotate(60deg);
+}
+
+.shadow-camera-aperture span:first-child {
+  transform: translate(-50%, -50%) rotate(120deg);
+}
+
+.shadow-camera-aperture span:last-child {
+  width: 35%;
+  height: 35%;
+  border: 1px solid rgb(255 255 255 / 35%);
+  border-radius: 50%;
+  background: #000;
+  transform: translate(-50%, -50%);
+}
+
+.shadow-camera-kicker {
+  margin: 0 0 0.45rem;
+  color: color-mix(in srgb, var(--mesh-accent, #d8ba75) 76%, white);
+  font-size: 0.72rem !important;
+  font-weight: 760;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.shadow-camera-core p:not(.shadow-camera-kicker) {
+  max-width: 28rem;
+  margin: 0.85rem 0 0;
+}
+
+.shadow-light-stage {
+  position: relative;
+  border-color: rgb(255 255 255 / 22%);
+  background-color: hsl(var(--shadow-hue) 95% 55%);
+  color: #f8fbfb;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 10%),
+    0 1.5rem 4rem rgb(0 0 0 / 32%);
+}
+
+.shadow-light-stage::before,
+.shadow-light-stage::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+}
+
+.shadow-light-stage::before {
+  background:
+    radial-gradient(circle at 74% 14%, rgb(255 255 255 / 28%), transparent 24%),
+    linear-gradient(145deg, rgb(0 0 0 / 8%), transparent 45%, rgb(0 0 0 / 18%));
+}
+
+.shadow-light-stage::after {
+  inset: 1rem;
+  border: 1px solid rgb(255 255 255 / 29%);
+  border-radius: calc(var(--mesh-radius-lg, 1.25rem) - 0.4rem);
+}
+
+.shadow-light-stage > * {
+  position: relative;
+  z-index: 1;
+}
+
+.shadow-light-stage .shadow-eyebrow {
+  color: rgb(255 255 255 / 80%);
+}
+
+.shadow-light-stage h1,
+.shadow-light-stage h2 {
+  color: #fff;
+}
+
+.shadow-light-stage .mesh-status-pill,
+.shadow-light-stage .mesh-presence {
+  border-color: rgb(255 255 255 / 31%);
+  background: rgb(3 11 16 / 41%);
+  color: #fff;
+  backdrop-filter: blur(10px);
+}
+
+.shadow-light-stage .mesh-button-secondary,
+.shadow-light-stage .mesh-button-quiet {
+  border-color: rgb(255 255 255 / 33%);
+  background: rgb(3 11 16 / 42%);
+  color: #fff;
+  backdrop-filter: blur(10px);
+}
+
+.shadow-light-stage .mesh-button-quiet {
+  background: transparent;
+}
+
+.shadow-light-stage .shadow-stage-footer {
+  border-top-color: rgb(255 255 255 / 24%);
+}
+
+.shadow-light-core {
+  display: grid;
+  grid-template-columns: minmax(0, 1.04fr) minmax(11rem, 0.96fr);
+  align-items: end;
+  gap: clamp(1rem, 4vw, 4rem);
+  flex: 1;
+  min-height: 0;
+  max-width: 54rem;
+  margin: 0 auto;
+  padding: clamp(1rem, 4vw, 3.5rem) 0;
+}
+
+.shadow-light-readout {
+  display: grid;
+  align-content: end;
+  justify-items: start;
+  gap: 0.1rem;
+}
+
+.shadow-light-readout span,
+.shadow-light-readout small,
+.shadow-light-direction span {
+  color: rgb(255 255 255 / 83%);
+  font-size: 0.73rem;
+  font-weight: 760;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.shadow-light-readout strong {
+  font-size: clamp(3.8rem, 11vw, 9.6rem);
+  font-weight: 790;
+  letter-spacing: -0.085em;
+  line-height: 0.78;
+  text-shadow: 0 0.2rem 1.4rem rgb(0 0 0 / 18%);
+}
+
+.shadow-light-readout small {
+  margin-top: 0.55rem;
+  font-size: 0.86rem;
+}
+
+.shadow-light-direction {
+  align-self: center;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgb(255 255 255 / 27%);
+  border-radius: 1rem;
+  background: rgb(3 11 16 / 43%);
+  backdrop-filter: blur(12px);
+}
+
+.shadow-light-direction p {
+  margin: 0.62rem 0 0;
+  color: rgb(255 255 255 / 87%);
 }
 
 .settings-toggle {
-  display: flex;
-  gap: 0.4rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
 }
 
 .settings-toggle button {
-  flex: 1;
-  padding: 0.55rem;
+  min-height: 2.75rem;
+  padding: 0.58rem 0.64rem;
+  border: 1px solid var(--mesh-border, rgb(255 255 255 / 18%));
+  border-radius: 0.7rem;
   background: transparent;
-  color: var(--fg);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 6px;
+  color: var(--mesh-text, #faf4e9);
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
 }
 
 .settings-toggle button.on {
-  background: var(--accent);
-  color: #0a0a0a;
-  border-color: var(--accent);
-  font-weight: 600;
+  border-color: var(--mesh-accent, #d8ba75);
+  background: color-mix(in srgb, var(--mesh-accent, #d8ba75) 20%, transparent);
+  color: var(--mesh-text, #faf4e9);
+  font-weight: 720;
 }
 
-.settings-reshuffle {
-  padding: 0.7rem;
-  background: var(--accent);
-  color: #0a0a0a;
-  border: none;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
+@media (min-width: 47rem) and (max-height: 44rem) {
+  .shadow-paint-landing {
+    align-items: stretch;
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
+  }
+
+  .shadow-entry-shell {
+    gap: 0.9rem 1.6rem;
+  }
+
+  .shadow-entry-intro h1 {
+    font-size: clamp(2.55rem, 5.2vw, 4.1rem);
+  }
+
+  .shadow-entry-lede {
+    margin-top: 0.55rem;
+    font-size: 0.87rem;
+    line-height: 1.37;
+  }
+
+  .shadow-entry-signals {
+    margin-top: 0.65rem;
+  }
+
+  .shadow-entry-control {
+    padding: 0.9rem;
+  }
+
+  .shadow-entry-control h2 {
+    font-size: 1.35rem;
+  }
+
+  .shadow-role-options {
+    gap: 0.42rem;
+    margin: 0.65rem 0;
+  }
+
+  .shadow-role-option {
+    min-height: 3.85rem;
+    padding: 0.55rem 0.7rem;
+  }
+
+  .shadow-role-option-detail,
+  .shadow-entry-helper {
+    font-size: 0.72rem;
+    line-height: 1.32;
+  }
+
+  .shadow-arm-action {
+    min-height: 2.7rem;
+    padding-block: 0.58rem;
+  }
+
+  .shadow-light-guide {
+    gap: 0.75rem;
+  }
+
+  .shadow-guide-frame {
+    min-height: 8.4rem;
+  }
+
+  .shadow-light-guide h2 {
+    font-size: 1.12rem;
+  }
+
+  .shadow-light-guide p {
+    margin-top: 0.35rem;
+    font-size: 0.72rem;
+    line-height: 1.3;
+  }
+
+  .shadow-stage-card {
+    padding: 0.95rem;
+  }
+
+  .shadow-camera-core,
+  .shadow-light-core {
+    padding: 0.65rem 0;
+  }
+
+  .shadow-camera-aperture {
+    width: min(100%, 11rem);
+  }
+
+  .shadow-light-readout strong {
+    font-size: clamp(3.5rem, 8vw, 6.5rem);
+  }
+
+  .shadow-stage-footer {
+    padding-top: 0.65rem;
+  }
 }
 
-.settings-help {
-  font-size: 0.78rem;
-  color: var(--muted);
-  margin: 0;
-  line-height: 1.4;
+@media (max-width: 46rem) {
+  .shadow-paint-landing {
+    align-items: start;
+  }
+
+  .shadow-entry-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .shadow-entry-intro h1 {
+    max-width: 10ch;
+    font-size: clamp(2.8rem, 14vw, 4.25rem);
+  }
+
+  .shadow-entry-lede {
+    margin-top: 0.75rem;
+  }
+
+  .shadow-entry-signals {
+    margin-top: 0.85rem;
+  }
+
+  .shadow-light-guide {
+    display: none;
+  }
+
+  .shadow-stage-card {
+    min-height: 100%;
+  }
+
+  .shadow-stage-footer,
+  .shadow-camera-core,
+  .shadow-light-core {
+    grid-template-columns: 1fr;
+  }
+
+  .shadow-stage-footer {
+    align-items: stretch;
+  }
+
+  .shadow-stage-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    justify-content: stretch;
+  }
+
+  .shadow-camera-core {
+    gap: 1.25rem;
+    padding: 1.5rem 0;
+  }
+
+  .shadow-camera-aperture {
+    width: min(52vw, 13rem);
+  }
+
+  .shadow-light-core {
+    align-content: center;
+    gap: 1.15rem;
+    padding: 1.4rem 0;
+  }
+
+  .shadow-light-direction {
+    align-self: stretch;
+  }
 }
 
-.settings-help code {
-  background: rgba(255, 255, 255, 0.06);
-  padding: 0.05em 0.3em;
-  border-radius: 3px;
-  font-size: 0.85em;
+@media (max-width: 25rem) {
+  .shadow-paint-landing,
+  .shadow-paint-live {
+    padding-inline: 0.7rem;
+  }
+
+  .shadow-entry-control,
+  .shadow-stage-card {
+    padding: 0.9rem;
+  }
+
+  .shadow-entry-control-heading,
+  .shadow-stage-topline {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .shadow-entry-control .mesh-status-pill,
+  .shadow-stage-topline .mesh-status-pill {
+    max-width: none;
+  }
+
+  .shadow-light-readout strong {
+    font-size: clamp(3.3rem, 18vw, 4.5rem);
+  }
+
+  .shadow-stage-actions {
+    grid-template-columns: 1fr;
+  }
 }
 
-.settings-actions {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-
-.settings-actions button {
-  flex: 1;
-  padding: 0.7rem;
-  font-size: 0.9rem;
-  background: var(--accent);
-  color: #0a0a0a;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.settings-actions button + button {
-  background: transparent;
-  color: var(--fg);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.settings-footer {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: var(--muted);
-}
-
-.settings-footer a {
-  color: var(--accent);
-  text-decoration: none;
+@media (prefers-reduced-motion: reduce) {
+  .shadow-role-option {
+    transition: none;
+  }
 }

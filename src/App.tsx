@@ -45,7 +45,7 @@ export function App() {
       onRoomChange={setRoomId}
       settingsExtras={<SettingsExtras role={role} onRoleChange={setRole} peerId={peerId} />}
     >
-      <Shadow roomId={roomId} role={role} peerId={peerId} />
+      <Shadow roomId={roomId} role={role} peerId={peerId} onRoleChange={setRole} />
     </MeshShell>
   );
 }
