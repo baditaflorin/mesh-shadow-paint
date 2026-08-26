@@ -1,68 +1,74 @@
-# mesh-shadow-paint
+# Shadow Paint
 
-[![Live](https://img.shields.io/badge/live-baditaflorin.github.io%2Fmesh--shadow--paint-4DD0E1?style=flat-square)](https://baditaflorin.github.io/mesh-shadow-paint/)
-[![Version](https://img.shields.io/github/package-json/v/baditaflorin/mesh-shadow-paint?style=flat-square&color=4DD0E1)](https://github.com/baditaflorin/mesh-shadow-paint/blob/main/package.json)
+[![Live](https://img.shields.io/badge/live-Shadow%20Paint-d8ba75?style=flat-square)](https://baditaflorin.github.io/mesh-shadow-paint/)
+[![Version](https://img.shields.io/github/package-json/v/baditaflorin/mesh-shadow-paint?style=flat-square&color=d8ba75)](https://github.com/baditaflorin/mesh-shadow-paint/blob/main/package.json)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
-[![No backend](https://img.shields.io/badge/backend-none-050505?style=flat-square)](docs/adr/0001-deployment-mode.md)
+[![No backend](https://img.shields.io/badge/backend-none-15111b?style=flat-square)](docs/adr/0001-deployment-mode.md)
 
-> Phones become colored fill lights. One phone is the camera; others show solid hues from different angles.
+> A shared lighting studio: turn nearby phones into deliberate fill panels, keep one station dark, and shape a photograph’s shadows together.
 
-**Live:** https://baditaflorin.github.io/mesh-shadow-paint/
+**Live:** [baditaflorin.github.io/mesh-shadow-paint](https://baditaflorin.github.io/mesh-shadow-paint/)
 
-Open the link on every phone. Pick one as the **camera** (it just stays
-black). Set the rest to **lamp** — each one glows a different hue from a
-shared 8-color palette. Hold them around your subject at different angles
-and shoot with your real camera. Shadows fall in each phone's complementary
-color. Tap **Reshuffle palette** on any phone to redistribute hues.
+Shadow Paint is a browser-local coordination tool for a practical physical setup. One device becomes a **camera station** and stays low-light beside the native camera. Every other device becomes a **light panel** with a deterministic hue from the same shared palette. No photos, camera stream, or media leave the device.
 
-## How it works
+## Make a lighting setup
 
-1. Each phone joins a shared **Yjs document** over **y-webrtc**.
-2. A persistent `peerId` (UUID in `localStorage`) seeds a deterministic
-   palette index: `paletteIdx = (hash(peerId) + rotationCounter) mod 8`.
-3. The palette is `[0°, 45°, 90°, 135°, 180°, 225°, 270°, 315°]` on the HSL
-   hue wheel.
-4. The shared `rotationCounter` is a CRDT integer. Reshuffle increments it;
-   every phone instantly recomputes its hue from the same formula.
+1. Open the same room on every phone.
+2. Choose **Camera station** for the device beside the real camera.
+3. Choose **Light panel** for the devices around the subject, then arm them.
+4. Aim each panel from a different edge of the frame.
+5. Use **Rotate lighting palette** on any armed device for a new shared pass.
 
-No clock sync, no leader election, no camera/mic permission. See
-[ADR 0002](docs/adr/0002-deterministic-color-assignment.md) and
-[ADR 0003](docs/adr/0003-no-clock-sync.md).
+The first view makes the device role and arm action explicit. The camera station never asks for a camera permission; it is a dark, live presence monitor. Light panels are intentionally bright, because they are the physical output.
 
-## Privacy threat model
+## What synchronizes
 
-See [docs/privacy.md](docs/privacy.md). The only payload is role,
-timestamp, rotationCounter, and a `localStorage`-persisted peerId.
+- A Yjs document over y-webrtc carries device roles and a shared `rotationCounter`.
+- Each persistent local `peerId` maps to a stable hue: `(hash(peerId) + rotationCounter) mod 8`.
+- A role heartbeat provides the honest count of fresh light panels in the room.
+- Rotating the palette increments the CRDT counter, so every panel recomputes at once without an elected host or clock sync.
 
-## Architecture
+The fixed palette is `0°, 45°, 90°, 135°, 180°, 225°, 270°, 315°`. Human labels such as Amber, Cyan, and Cobalt only describe that deterministic state; they do not add a second source of truth.
 
-- **Mode A** — pure GitHub Pages.
-- **WebRTC** — Yjs + y-webrtc with self-hosted signaling and TURN.
+## Privacy and security
 
-## Run it locally
+Shadow Paint has no application backend, account system, media upload, or camera/microphone access. The shared payload is limited to role, timestamp, palette rotation, and a local device identifier used to choose a hue.
+
+- [Privacy notes](docs/privacy.md)
+- [Security policy](SECURITY.md)
+- [Programmatic security audit](docs/security-audit.md) — regenerate with `npm run audit:security`
+
+## Run locally
+
+Clone `mesh-common` as a sibling, then install both workspaces:
 
 ```bash
+git clone https://github.com/baditaflorin/mesh-common.git
 git clone https://github.com/baditaflorin/mesh-shadow-paint.git
-cd mesh-shadow-paint
-npm install
+cd mesh-common && npm ci
+cd ../mesh-shadow-paint && npm ci
 npm run dev
 ```
 
-## Self-hosted infrastructure
+## Validation
 
-| Repo                                                                   | Endpoint                               | Role                      |
-| ---------------------------------------------------------------------- | -------------------------------------- | ------------------------- |
-| [signaling-server](https://github.com/baditaflorin/signaling-server)   | `wss://turn.0docker.com/ws`            | y-webrtc protocol fan-out |
-| [turn-token-server](https://github.com/baditaflorin/turn-token-server) | `https://turn.0docker.com/credentials` | HMAC TURN creds           |
-| [coturn-hetzner](https://github.com/baditaflorin/coturn-hetzner)       | `turn:turn.0docker.com:3479`           | TURN relay                |
+```bash
+npm run fmt:check
+npm run typecheck
+npm run test
+npm run smoke
+npm run audit:security
+```
 
-## Settings
+The browser suite includes a real two-peer palette rotation, camera-to-light presence, keyboard role selection, and first-viewport contracts at `390×844` and `1141×602`.
 
-- **Room ID** — phones must share one to see each other.
-- **Role** — Camera (black screen) / Lamp (solid color).
-- **Reshuffle palette** — bumps the shared rotationCounter.
+## Architecture
 
-## ADRs
+- **Static deployment:** GitHub Pages from `main/docs`.
+- **Coordination:** Yjs + y-webrtc with self-hosted signaling and TURN credentials.
+- **State ownership:** browser-local storage and peer-to-peer CRDT updates only.
+
+## Design records
 
 - [0001 — Deployment mode](docs/adr/0001-deployment-mode.md)
 - [0002 — Deterministic color assignment](docs/adr/0002-deterministic-color-assignment.md)
@@ -71,4 +77,4 @@ npm run dev
 
 ## License
 
-[MIT](LICENSE) © 2026 Florin Badita
+MIT © 2026 Florin Badita
