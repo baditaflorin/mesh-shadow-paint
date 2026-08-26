@@ -2,6 +2,7 @@ import { createMeshConfig } from "@baditaflorin/mesh-common";
 
 export const appConfig = createMeshConfig({
   appName: "mesh-shadow-paint",
+  breadcrumbs: false,
   displayName: "Shadow Paint",
   visualProfile: "studio",
   shellLayout: "inset",
