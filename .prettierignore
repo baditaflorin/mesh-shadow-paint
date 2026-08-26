@@ -2,5 +2,8 @@ node_modules
 docs/assets
 docs/index.html
 docs/404.html
+# Reproducible machine-generated release evidence.
+docs/security-audit.json
+docs/security-audit.md
 package-lock.json
 CLAUDE.md
